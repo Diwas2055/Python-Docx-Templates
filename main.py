@@ -3,14 +3,16 @@ import subprocess
 from datetime import datetime
 from docx import Document
 
+root_path = os.path.abspath(os.curdir)
+folder_path = root_path + "/templates/"
+output_dir = root_path + "/data/pdf/"
+
 
 def main(
     user_name,
     job_title,
     company_name,
 ):
-    root_path = os.path.abspath(os.curdir)
-    folder_path = root_path + "/templates/"
     template_file_path = folder_path + f"{job_title.lower()}_cover_letter.docx"
     output_file_path = root_path + "/data/" + f"{user_name}-cover_letter.docx"
 
@@ -63,7 +65,7 @@ def doc2pdf(doc):
     """
     doc = os.path.abspath(doc)  # bugfix - searching files in windows/system32
     if client is None:
-        return doc2pdf_linux(doc)
+        return doc2pdf_linux(doc, output_dir)
     name, ext = os.path.splitext(doc)
     try:
         word = client.CreateObject("Word.Application")
@@ -76,17 +78,23 @@ def doc2pdf(doc):
         word.Quit()
 
 
-def doc2pdf_linux(doc):
+def doc2pdf_linux(doc, output_path):
     """
     convert a doc/docx document to pdf format (linux only, requires libreoffice)
     :param doc: path to document
     """
-    cmd = "libreoffice --convert-to pdf".split() + [doc]
-    p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-    p.wait(timeout=10)
-    stdout, stderr = p.communicate()
-    if stderr:
-        raise subprocess.SubprocessError(stderr)
+    # cmd = "libreoffice --convert-to pdf --outdir".split() + [doc, output_path]
+    # p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    # p.wait(timeout=10)
+    # stdout, stderr = p.communicate()
+    # if stderr:
+    #     raise subprocess.SubprocessError(stderr)
+    try:
+        os.system(
+            "libreoffice --convert-to pdf" + " " + doc + " --outdir " + output_path
+        )
+    except Exception as e:
+        raise e
 
 
 # define Python user-defined exceptions
