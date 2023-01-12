@@ -83,18 +83,20 @@ def doc2pdf_linux(doc, output_path):
     convert a doc/docx document to pdf format (linux only, requires libreoffice)
     :param doc: path to document
     """
-    # cmd = "libreoffice --convert-to pdf --outdir".split() + [doc, output_path]
-    # p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-    # p.wait(timeout=10)
-    # stdout, stderr = p.communicate()
-    # if stderr:
-    #     raise subprocess.SubprocessError(stderr)
-    try:
-        os.system(
-            "libreoffice --convert-to pdf" + " " + doc + " --outdir " + output_path
-        )
-    except Exception as e:
-        raise e
+    cmd = "libreoffice --convert-to pdf".split() + [doc]
+    location_cmd = "--outdir".split() + [output_path]
+    cmd.extend(location_cmd)
+    p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    p.wait(timeout=10)
+    stdout, stderr = p.communicate()
+    if stderr:
+        raise subprocess.SubprocessError(stderr)
+    # try:
+    #     os.system(
+    #         "libreoffice --convert-to pdf" + " " + doc + " --outdir " + output_path
+    #     )
+    # except Exception as e:
+    #     raise e
 
 
 # define Python user-defined exceptions
